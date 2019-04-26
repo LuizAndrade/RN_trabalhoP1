@@ -31,7 +31,7 @@ import numpy as np
 from scipy.ndimage.interpolation import shift
 
 # be able to save images on server
-matplotlib.use('Agg')
+matplotlib.use('Qt5Agg')
 from matplotlib import pyplot
 
 # date-time parsing function for loading the dataset
@@ -79,7 +79,8 @@ def cria_vetor_validacao(valida_recorrente,valor_previsto,validation_scaled,i):
     df1[i+1] = df1[i].shift(-1)
     df1.iat[11,i+1] = valor_previsto
     df1.iat[12,i+1] = b[i+1]
-    aux_M = df1.as_matrix()    
+    # aux_M = df1.as_matrix()    
+    aux_M = df1.values    
     vetor_validacao = aux_M.T  
     return vetor_validacao
 
@@ -295,7 +296,7 @@ def evaluate_single_step(model, scaled_dataset):
 
 # fit an MLP network to training data
 inicio = t.time()
-def modelo(train, validation, test, raw, scaler, n_batch, nb_epoch, neurons):
+def modelo(train, validation, test, raw, scaler, n_batch, nb_epoch, neurons, filename):
     # Separando o dataset de treino em entradas e target
     X, y = train[:, 0:-1], train[:, -1]
     model = Sequential()
@@ -480,6 +481,8 @@ def modelo(train, validation, test, raw, scaler, n_batch, nb_epoch, neurons):
     plt.xlabel('Épocas')
     plt.ylabel('RMSE')
     plt.legend(['train', 'val', 'test'], loc='best')
+    plt.savefig("testes1\\lixo1.png")
+    plt.close()
     plt.show()
     
     # Printando o erro MAPE de validação E TREINO
@@ -490,6 +493,8 @@ def modelo(train, validation, test, raw, scaler, n_batch, nb_epoch, neurons):
     plt.xlabel('Épocas')
     plt.ylabel('MAPE')
     plt.legend(['train', 'val', 'test'], loc='best')
+    plt.savefig("testes1\\lixo2.png")
+    plt.close()
     plt.show()
     '''
     # Printando os valores previstos na validação
@@ -507,6 +512,8 @@ def modelo(train, validation, test, raw, scaler, n_batch, nb_epoch, neurons):
     plt.xlabel('Meses')
     plt.ylabel('ICMS')
     plt.legend(['Previsto', 'Real'], loc='best')
+    plt.savefig(filename)
+    plt.close()
     plt.show()    
     
     hist_rmse=DataFrame()
@@ -568,7 +575,9 @@ def run(n_epochs,nh, repeats, n_batch):
     # o repeat equivale ao numero de redes que seráo instanciadas. Dentro do numero de instancias da rede, tem o numero
     # de epocas, que equivale quantas vezes a rede será treinada.
     for i in range(repeats):
-        history_rmse,history_mape,melhor_arq = modelo(train_scaled, validation_scaled, test_scaled, raw_values, scaler, n_batch, n_epochs, nh)        
+        filename = "testes1\\NH"+str(nh)+"R"+str(repeats)+"_v"+str(i)+".png"
+        print("\n-------------------------------\nfilename:"+filename+"\n-------------------------------\n")
+        history_rmse,history_mape,melhor_arq = modelo(train_scaled, validation_scaled, test_scaled, raw_values, scaler, n_batch, n_epochs, nh, filename)        
 
        
         #revisao Karla
